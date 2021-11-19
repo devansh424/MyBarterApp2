@@ -47,7 +47,8 @@ export default class LoginScreen extends React.Component{
                         lastName:this.state.lastName,
                         address:this.state.address,
                         phoneNumber:this.state.phoneNumber,
-                        email:this.state.email
+                        email:this.state.email,
+                        userId:randomId
                     });
                     return Alert.alert("user added.")
                 }

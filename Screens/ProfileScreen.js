@@ -1,15 +1,23 @@
 import React from "react";
 import {View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Platform, StatusBar, SafeAreaView, Alert} from "react-native";
-import Header from "../Component/Header";
 import firebase from "firebase";
 import db from "../Config";
+import { Header, Icon } from "react-native-elements";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default class ProfileScreen extends React.Component{
     render(){
         return(
             <View style={styles.container}>
                 <SafeAreaView style={styles.droidsafearea}/>
-                <Header text="Profile Screen"/>
+                <SafeAreaProvider>
+                    <Header centerComponent={{text:"My Barter Screen",style:{color:"white",fontSize:15,fontWeight:"bold"}}} 
+                    leftComponent={()=>{
+                        return(
+                            <Icon name="bars" type="antdesign" color="white"/>
+                        );
+                    }}/>
+                </SafeAreaProvider>
             </View>
         );
     }
