@@ -17,19 +17,19 @@ import db from "../Config";
 import { Header, Icon, ThemeConsumer } from "react-native-elements";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-export default class BarterScreen extends React.Component {
+export default class NotificationScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       allBarter: [],
+      names: [],
     };
   }
 
-  getBarters = () => {
-    db.ref("barters").on("value", (data) => {
+  getNotification = () => {
+    db.ref("barterInterest").on("value", (data) => {
       var allBarters = [];
       var barters = data.val();
-      console.log(barters);
       Object.keys(barters).forEach((key) => {
         allBarters.push({
           key: key,
@@ -39,22 +39,35 @@ export default class BarterScreen extends React.Component {
       this.setState({
         allBarter: allBarters,
       });
-      console.log(allBarters);
+      for(var i in this.state.allBarter){
+        db.ref("users/" + this.state.allBarter[i].value.interestedBuyerId).on("value",data => {
+          this.setState({
+            names: [...this.state.names,data.val().firstName]
+          });
+          console.log(this.state.names);
+        })
+      }
     });
   };
 
   renderItem = ({ item, index }) => {
-    return (
+    if(item.value.requesterId === firebase.auth().currentUser.uid){
+      return (
         <TouchableOpacity style={styles.itemcontainer} onPress={()=>{this.props.navigation.navigate("UserDetail",{"item":item})}}>
           <Text style={styles.headingtext}>Object: {item.value.objectName}</Text>
+          <Text style={styles.textstyle}>IntersetedBuyerID: {item.value.interestedBuyerId}</Text>
+          <Text style={styles.textstyle}>Name: {this.state.names[index]}</Text>  
           <Text style={styles.textstyle}>Reason: {item.value.reason}</Text>
           <Text style={styles.textstyle}>Cost/Barter Item: {item.value.costOrBarterItem}</Text>
         </TouchableOpacity>
     );
+    }else{
+      return null
+    }
   };
 
   componentDidMount() {
-    this.getBarters();
+    this.getNotification();
   }
 
   render() {
@@ -64,7 +77,7 @@ export default class BarterScreen extends React.Component {
         <SafeAreaProvider>
           <Header
             centerComponent={{
-              text: "My Barter Screen",
+              text: "Notification Screen",
               style: { color: "white", fontSize: 15, fontWeight: "bold" },
             }}
             leftComponent={() => {

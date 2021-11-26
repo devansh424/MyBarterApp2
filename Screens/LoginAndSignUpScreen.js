@@ -2,7 +2,8 @@ import React from "react";
 import {View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Platform, StatusBar, SafeAreaView, Alert} from "react-native";
 import firebase from "firebase";
 import db from "../Config";
-import Header from "../Component/Header";
+import { Header } from "react-native-elements";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default class LoginScreen extends React.Component{
     constructor(props){
@@ -12,7 +13,6 @@ export default class LoginScreen extends React.Component{
             password:"",
             username:"",
             address:"",
-            phonenumber:"",
             signuppressed:false,
             confirmPassword:"",
             firstName:"",
@@ -39,16 +39,16 @@ export default class LoginScreen extends React.Component{
 
     signUp = () => {
         if(this.state.password === this.state.confirmPassword){
-            firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password).then((response)=>{
+            firebase.auth().createUserWithEmailAndPassword(this.state.email.toLowerCase(),this.state.password).then((response)=>{
                 if(response){
-                    var randomId = Math.random().toString(26).substring(2);
-                    db.ref("users/" + randomId).update({
+                    var uid = firebase.auth().currentUser.uid
+                    db.ref("users/" + uid).update({
                         firstName:this.state.firstName,
                         lastName:this.state.lastName,
                         address:this.state.address,
                         phoneNumber:this.state.phoneNumber,
-                        email:this.state.email,
-                        userId:randomId
+                        email:this.state.email.toLowerCase(),
+                        userId:uid
                     });
                     return Alert.alert("user added.")
                 }
@@ -66,7 +66,8 @@ export default class LoginScreen extends React.Component{
         if(this.state.signuppressed===false){
             return(
                 <View style={styles.container}>
-                    <Header text="Login Screen"/>
+                    <SafeAreaProvider>
+                    <Header centerComponent={{text:"LoginScreen",style:{color:"white",fontSize:15,fontWeight:"bold"}}}/>
                     <SafeAreaView styles={styles.droidsafearea}/>
                     <TextInput placeholder={"email"} onChangeText={(text)=>{
                         this.setState({
@@ -98,13 +99,15 @@ export default class LoginScreen extends React.Component{
                             Signup
                         </Text>
                     </TouchableOpacity>
+                    </SafeAreaProvider>
                 </View>
             );
         }else{
             return(
                 <View style={styles.container}>
                     <SafeAreaView styles={styles.droidsafearea}/>
-                    <Header text="SignUp Screen"/>
+                    <SafeAreaProvider>
+                    <Header centerComponent={{text:"SignUpScreen",style:{color:"white",fontSize:15,fontWeight:"bold"}}}/>
                     <TextInput placeholder={"email"} onChangeText={(text)=>{
                         this.setState({
                             email:text
@@ -176,6 +179,7 @@ export default class LoginScreen extends React.Component{
                             Cancel
                         </Text>
                     </TouchableOpacity>
+                    </SafeAreaProvider>
                 </View>
             );
         }

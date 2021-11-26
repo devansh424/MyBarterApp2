@@ -21,7 +21,11 @@ export default class AddBarterScreen extends React.Component{
             objectName:this.state.objectName,
             reason:this.state.reason,
             costOrBarterItem:this.state.costOrBarterItem,
-            barterId:randomIdBarter
+            barterId:randomIdBarter,
+            requesterId:firebase.auth().currentUser.uid
+        }).then(()=>{
+            Alert.alert("Barter is Added!");
+            this.props.navigation.navigate("BarterList");
         })
     }
 
@@ -31,10 +35,11 @@ export default class AddBarterScreen extends React.Component{
                 <SafeAreaView style={styles.droidsafearea}/>
                 <SafeAreaProvider>
                     <Header centerComponent={{text:"My Barter Screen",style:{color:"white",fontSize:15,fontWeight:"bold"}}} 
-                    leftComponent={()=>{
-                        return(
-                            <Icon name="bars" type="antdesign" color="white"/>
-                        );
+                    leftComponent={() => {
+                        return <Icon onPress={()=>{this.props.navigation.toggleDrawer()}} name="bars" type="antdesign" color="white" />;
+                      }}
+                      rightComponent={()=>{
+                        return <Icon onPress={()=>{this.props.navigation.navigate("Notifications")}} name="bell" type="font-awesome" color="white" />
                     }}/>
 
                     <TextInput placeholder={"Object Name"} onChangeText={(text)=>{this.setState({objectName:text})}} style={styles.textinput}>
@@ -47,7 +52,7 @@ export default class AddBarterScreen extends React.Component{
 
                     </TextInput>
 
-                    <TouchableOpacity onPress={()=>{this.addBarter()}}>
+                    <TouchableOpacity onPress={()=>{this.addBarter()}} style={styles.button}>
                         <Text>
                             Submit
                         </Text>
